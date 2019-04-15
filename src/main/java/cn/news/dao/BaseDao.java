@@ -38,7 +38,7 @@ public class BaseDao {
             for (int i = 0; i < params.length; i++) {
                 pstmt.setObject(i + 1, params[i]);
             }
-            result = pstmt.executeUpdate();
+            result = pstmt.executeUpdate();//调用方法
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
