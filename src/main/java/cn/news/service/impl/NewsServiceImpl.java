@@ -1,18 +1,18 @@
 package cn.news.service.impl;
 
+import cn.news.dao.NewsDao;
+import cn.news.dao.impl.CommentsDaoImpl;
+import cn.news.dao.impl.NewsDaoImpl;
+import cn.news.entity.Comment;
+import cn.news.entity.News;
+import cn.news.service.NewsService;
+import cn.news.util.DatabaseUtil;
+import cn.news.util.Page;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
-import cn.news.dao.NewsDao;
-import cn.news.dao.impl.CommentsDaoImpl;
-import cn.news.dao.impl.NewsDaoImpl;
-import cn.news.service.NewsService;
-import cn.news.util.Page;
-import cn.news.entity.Comment;
-import cn.news.entity.News;
-import cn.news.util.DatabaseUtil;
 
 public class NewsServiceImpl implements NewsService {
 
@@ -70,11 +70,36 @@ public class NewsServiceImpl implements NewsService {
 	}
 
 	public int addNews(News news) throws SQLException {
-		return 0;
+		Connection conn=null;
+		int result=-1;
+		try {
+			conn=DatabaseUtil.getConnection();
+			result=new NewsDaoImpl(conn).addNews(news);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			DatabaseUtil.closeAll(conn, null, null);
+		}
+		return result;
 	}
 
 	public int modifyNews(News news) throws SQLException {
 		return 0;
+	}
+
+	@Override
+	public int findNewsCount() throws SQLException {
+		Connection conn=null;
+		int count=-1;
+		try {
+			conn=DatabaseUtil.getConnection();
+			count=new NewsDaoImpl(conn).getTotalCount();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			DatabaseUtil.closeAll(conn, null, null);
+		}
+		return count;
 	}
 
 	public void findPageNews(Page<News> pageObj) throws SQLException {
@@ -84,7 +109,6 @@ public class NewsServiceImpl implements NewsService {
 		try {
 			conn=DatabaseUtil.getConnection();
 			newsDao=new NewsDaoImpl(conn);
-			pageObj.setTotalCount(newsDao.getTotalCount());
 			pageList=newsDao.getPageNewsList(pageObj.getCurrentPageNo(), pageObj.getPageSize());
 			pageObj.setPageList(pageList);
 		} catch (Exception e) {

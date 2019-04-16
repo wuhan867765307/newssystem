@@ -57,12 +57,26 @@ public class NewsServlet extends HttpServlet {
 
         if ("getPageNews".equals(method)) {//分页查询
             String currentPageNo = request.getParameter("currentPageNo");
+
+            int count=-1;
+            try {
+                count = newsService.findNewsCount();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             Page<News> pageObj = new Page<News>();
+            pageObj.setPageSize(10);
+            pageObj.setTotalCount(count);
             if (StringUtils.isNullOrEmpty(currentPageNo)) {
                 currentPageNo = "1";
             }
+            //对删除之后的总页数进行判断（有可能删除新闻之后总页数会发生变化）
+            if(Integer.parseInt(currentPageNo)>pageObj.getTotalPageCount()){
+                currentPageNo=pageObj.getTotalPageCount()+"";
+            }
             pageObj.setCurrentPageNo(Integer.parseInt(currentPageNo));
-            pageObj.setPageSize(10);
+
             String pageNews = null;
             try {
                 newsService.findPageNews(pageObj);
@@ -108,8 +122,7 @@ public class NewsServlet extends HttpServlet {
                     news.setComments(comments);
                 }
                 request.setAttribute("topicList", topicList);
-                request.setAttribute("cn/news", news);
-
+                request.setAttribute("news", news);
                 request.getRequestDispatcher("/jsp/newspages/news_modify.jsp").forward(request, response);//转发到
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,7 +133,7 @@ public class NewsServlet extends HttpServlet {
             //请求信息中的内容是否是multipart类型
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
             //上传文件的存储路径（服务器文件系统上的绝对文件路径）
-            String uploadFilePath = request.getSession().getServletContext().getRealPath("upload/" );
+            String uploadFilePath = request.getSession().getServletContext().getRealPath("/upload/" );
             if (isMultipart) {
                 FileItemFactory factory = new DiskFileItemFactory();
                 ServletFileUpload upload = new ServletFileUpload(factory);
@@ -128,13 +141,27 @@ public class NewsServlet extends HttpServlet {
                     //解析form表单中所有文件
                     List<FileItem> items = upload.parseRequest(request);
                     Iterator<FileItem> iter = items.iterator();
+                    News news=new News();
                     while (iter.hasNext()) {   //依次处理每个文件
-                        FileItem item = (FileItem) iter.next();
+                        FileItem item = iter.next();
                         if (item.isFormField()){  //普通表单字段
                             fieldName = item.getFieldName();   //表单字段的name属性值
-                            if (fieldName.equals("user")){
-                                //输出表单字段的值
-                                out.print(item.getString("UTF-8")+"上传了文件。<br/>");
+                            switch (fieldName){
+                                case "ntitle":
+                                    news.setNtitle(item.getString("UTF-8"));
+                                    break;
+                                case "nauthor":
+                                    news.setNauthor(item.getString("UTF-8"));
+                                    break;
+                                case "nsummary":
+                                    news.setNsummary(item.getString("UTF-8"));
+                                    break;
+                                case "ncontent":
+                                    news.setNcontent(item.getString("UTF-8"));
+                                    break;
+                                case "ntid":
+                                    news.setNtid(Integer.parseInt(item.getString("UTF-8")));
+                                    break;
                             }
                         }else{  //文件表单字段
                             String fileName = item.getName();
@@ -143,9 +170,20 @@ public class NewsServlet extends HttpServlet {
                                 File saveFile = new File(uploadFilePath, fullFile.getName());
                                 item.write(saveFile);
                                 uploadFileName = fullFile.getName();
-                                out.print("上传成功后的文件名是："+uploadFileName);
+                                news.setNpicpath(uploadFileName);
                             }
                         }
+                    }
+                    //添加新闻到数据库中
+                    int result=newsService.addNews(news);
+                    if(result>0){
+                        //添加成功！
+                        out.print("<script>alert('添加成功！')</script>");
+                        out.print("<script>window.location='"+path+"/jsp/newspages/news_add.jsp'</script>");
+                    }else{
+                        //添加失败
+                        out.print("<script>alert('添加失败！')</script>");
+                        out.print("<script>window.location='"+path+"/jsp/newspages/news_read.jsp'</script>");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

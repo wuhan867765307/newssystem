@@ -1,11 +1,11 @@
 package cn.news.service;
 
+import cn.news.entity.News;
+import cn.news.util.Page;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
-import cn.news.util.Page;
-import cn.news.entity.News;
 
 public interface NewsService {
     // 获取所有新闻
@@ -29,4 +29,7 @@ public interface NewsService {
     public int addNews(News news) throws SQLException;
     //修改新闻
     public int modifyNews(News news) throws SQLException;
+
+    //查询总记录数
+    public int findNewsCount() throws  SQLException;
 }
