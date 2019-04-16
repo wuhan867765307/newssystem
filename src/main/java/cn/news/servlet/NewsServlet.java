@@ -134,6 +134,10 @@ public class NewsServlet extends HttpServlet {
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
             //上传文件的存储路径（服务器文件系统上的绝对文件路径）
             String uploadFilePath = request.getSession().getServletContext().getRealPath("/upload/" );
+            File file=new File(uploadFilePath);
+            if(!file.exists()){
+                file.mkdir();
+            }
             if (isMultipart) {
                 FileItemFactory factory = new DiskFileItemFactory();
                 ServletFileUpload upload = new ServletFileUpload(factory);
