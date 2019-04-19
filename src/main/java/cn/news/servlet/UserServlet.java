@@ -1,20 +1,18 @@
 package cn.news.servlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
+import cn.news.entity.User;
+import cn.news.service.UserService;
+import cn.news.service.impl.UserServiceImpl;
+import cn.news.util.Constants;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import cn.news.util.Constants;
-import org.apache.log4j.Logger;
-
-import cn.news.entity.User;
-import cn.news.service.UserService;
-import cn.news.service.impl.UserServiceImpl;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
 
 public class UserServlet extends HttpServlet {
 	private static Logger logger=Logger.getLogger(UserServlet.class);
@@ -30,7 +28,7 @@ public class UserServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
+//		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=utf-8");
 		String method=request.getParameter("method");
 		PrintWriter out= response.getWriter();
