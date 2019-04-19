@@ -84,7 +84,17 @@ public class NewsServiceImpl implements NewsService {
 	}
 
 	public int modifyNews(News news) throws SQLException {
-		return 0;
+		Connection conn=null;
+		int result=-1;
+		try {
+			conn=DatabaseUtil.getConnection();
+			result=new NewsDaoImpl(conn).updateNews(news);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			DatabaseUtil.closeAll(conn, null, null);
+		}
+		return result;
 	}
 
 	@Override

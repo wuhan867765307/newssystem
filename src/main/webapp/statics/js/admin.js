@@ -45,7 +45,7 @@ function getPage_news(currentPageNo){
 	$.ajax({
 		url:path+"/NewsServlet",
 		type:"get",
-		data:{method:"getPageNews",currentPageNo:currentPageNo},
+		data:{method:"getPageNews",currentPageNo:currentPageNo,pageSize:10},
 		dataType:"json",
 		success:function(data){
 			//清空所有数据
@@ -62,6 +62,7 @@ function getPage_news(currentPageNo){
 			for(var i=0;i<pageList.length;i++){
 				var str=$("<li>"+pageList[i].ntitle
 					+"<span> 作者： "+pageList[i].nauthor
+                    +"&#160;&#160;&#160;&#160; <a href='"+path+"/NewsServlet?method=showNewsByNid&nid="+pageList[i].nid+"'>查看</a>"
 					+"&#160;&#160;&#160;&#160; <a href='"+path+"/NewsServlet?method=getNewsByNid&nid="+pageList[i].nid+"'>修改</a>"
 					+"&#160;&#160;&#160;&#160; <a class='del' data_nid='"+pageList[i].nid+"' href='javascript:;'>删除</a>"
 					+"</span>"

@@ -24,7 +24,7 @@
 
         <div id="opt_area">
             <h1 id="opt_type"> 修改新闻： </h1>
-            <form action="" method="post">
+            <form action="${pageContext.request.contextPath}/NewsServlet?method=newsmodify" method="post" enctype="multipart/form-data">
                 <p>
                     <label> 主题 </label>
                     <select name="ntid" class="topics">
@@ -52,7 +52,9 @@
                 </p>
                 <p>
                     <label> 上传图片 </label>
-                    <input name="file" type="file" class="opt_input"/>
+                    <input name="file" type="file" class="opt_input" value=""/>
+                    <input type="hidden" name="hiddenPicPath" value="${news.npicpath}"/>
+                    <%--<img src="${pageContext.request.contextPath }/upload/${news.npicpath}" style="width: 200px;" name="picimg"/>--%>
                 </p>
                 <input type="submit" value="提交" class="opt_sub"/>
                 <input type="reset" value="重置" class="opt_sub"/>
